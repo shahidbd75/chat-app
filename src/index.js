@@ -13,17 +13,17 @@ const publicDirectoryPath = path.join(__dirname , '../public');
 
 app.use(express.static(publicDirectoryPath));
 
-var count = 0;
 io.on('connection', (socket) => {
-    console.log('Web Socket is connected to the server');
-
-    socket.emit('eventEmitter', count);
-    socket.on('increment', () => {
-        count ++;
-        //socket.emit('eventEmitter', count);
-        io.emit('eventEmitter', count);
+    socket.on('sendMessage', (message) => {
+        io.emit('newMessage', message);
     });
-})
+
+    socket.broadcast.emit('newMessage','A user has joined');
+
+    socket.on('disconnect', () => {
+        io.emit('newMessage', 'A user has left!');
+    });
+});
 
 server.listen(port, () => {
     console.log(`Server is up on the ${port}!`);

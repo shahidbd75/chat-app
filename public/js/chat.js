@@ -1,11 +1,13 @@
 var socket = io();
 
+document.getElementById('form-message').addEventListener('submit', (e) => {
+    e.preventDefault();
 
-socket.on('eventEmitter', (count) => {
-    console.log(count);
+    const message = e.target.elements.message.value;
+
+    socket.emit('sendMessage', message);
 });
 
-document.getElementById('btnIncrement').addEventListener('click', () => {
-    console.log('clicked!!');
-    socket.emit('increment');
-})
+socket.on('newMessage', (data) => {
+    console.log(data);
+});
