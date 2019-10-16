@@ -8,6 +8,16 @@ document.getElementById('form-message').addEventListener('submit', (e) => {
     socket.emit('sendMessage', message);
 });
 
+document.getElementById('btnShare').addEventListener('click', () => {
+    if(!navigator.geolocation) {
+        return alert('your browser doesnot support geolocation');
+    }
+    navigator.geolocation.getCurrentPosition((position) => {
+        console.log(position);
+    })
+
+});
+
 socket.on('newMessage', (data) => {
     console.log(data);
 });
