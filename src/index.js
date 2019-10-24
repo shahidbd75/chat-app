@@ -4,6 +4,8 @@ const express = require('express');
 const socketIO = require('socket.io');
 const Filter = require('bad-words');
 
+const { generateMessage, generateLocationMessage } = require('./utils/message');
+
 const app = express();
 const server = http.createServer(app);
 
@@ -11,6 +13,7 @@ const io = socketIO(server);
 
 const port = process.env.PORT || 3000;
 const publicDirectoryPath = path.join(__dirname , '../public');
+
 
 app.use(express.static(publicDirectoryPath));
 
@@ -22,19 +25,24 @@ io.on('connection', (socket) => {
             return callback('Do not use bad word');
         }
 
-        io.emit('newMessage', message);
+        io.emit('newMessage', generateMessage(message));
         callback('Delivered');
     });
 
-    socket.broadcast.emit('newMessage','A user has joined');
     socket.on('shareLocation', (position, callback) => {
-        socket.broadcast.emit('newMessage', position);
+        socket.broadcast.emit('sendLocation', generateLocationMessage(position));
         callback('Location Shared');
     });
     socket.on('disconnect', () => {
-        io.emit('newMessage', 'A user has left!');
+        io.emit('newMessage', generateMessage('A user has left!'));
     });
 
+    socket.on('join',({username, room}) => {
+        socket.join(room);
+
+        socket.emit('newMessage',generateMessage(`Welcome to ${room}!!!`));
+        socket.broadcast.to(room).emit('newMessage',generateMessage(`${username} has joined`));
+    });
 });
 
 server.listen(port, () => {

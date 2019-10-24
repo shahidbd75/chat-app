@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="icon" href="./img/favicon.png" >
+        <link rel="stylesheet" href="./css/styles.css" >
+    </head>
+    <body>
+        <div class="chat">
+            <div class="chat__sidebar"></div>
+            <div class="chat__main">
+                <h2>Chat Apps</h2>
+                <div id="message" class="chat__messages"></div>
+                <div class="compose">
+                    <form id="form-message">
+                        <input type="text" name="message" id="txtMessage" autocomplete="false" placeholder="write a message">
+                        <button id="btnSend">Send</button>
+                    </form>       
+                    <button id="btnShare">Share Location</button>
+                </div>
+            </div>
+        </div>
+
+        <script id="message-templete" type="text/html">
+            <div class="message">
+                <p>
+                    <span class="message__name">
+                        Some User Name
+                    </span>
+                    <span class="message_meta">
+                            {{createdAt}}
+                    </span>
+                </p>
+                <p>{{message}}</p>
+            </div>
+        </script>
+        <script id="location-templete" type="text/html">
+            <div class="message">
+                <p>
+                    <span class="message__name">
+                        Some User Name
+                    </span>
+                    <span class="message_meta">
+                            {{createdAt}}
+                    </span>
+                </p>
+                <p><a href="{{url}}" target="_blank" >Find me</a></p>
+            </div>
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.9.0/qs.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.1.0/mustache.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+        <script src="./lib/socket.io.js"></script>
+        <script src="./js/chat.js"></script>
+    </body>
+</html>
