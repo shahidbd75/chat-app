@@ -44,22 +44,32 @@ const getUsersInRoom = (room) => {
     return users.filter((user) => user.room === room);
 }
 
+module.exports = {
+    addUser,
+    removeUser,
+    getUser,
+    getUsersInRoom
+};
 
 
-addUser({id: 1,username :'Shahid Ab', room: 'Rajshahi University'});
-addUser({id: 2,username :'Rifat', room: 'Rajshahi University'});
-addUser({id: 3,username :'Zaman', room: 'Dhaka University'});
+
+
+// Test Code
+
+// addUser({id: 1,username :'Shahid Ab', room: 'Rajshahi University'});
+// addUser({id: 2,username :'Rifat', room: 'Rajshahi University'});
+// addUser({id: 3,username :'Zaman', room: 'Dhaka University'});
+
+// // console.log(users);
+
+// // console.log(getUser(2));
+
+// console.log(getUsersInRoom('rajshahi University'));
+
+// // var testUser = addUser({id: 1,username :'aa', room: 'Rajshahi University'});
+
+// // console.log(testUser);
+
+// console.log(removeUser(1));
 
 // console.log(users);
-
-// console.log(getUser(2));
-
-console.log(getUsersInRoom('rajshahi University'));
-
-// var testUser = addUser({id: 1,username :'aa', room: 'Rajshahi University'});
-
-// console.log(testUser);
-
-console.log(removeUser(1));
-
-console.log(users);

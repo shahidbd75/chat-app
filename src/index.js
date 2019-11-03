@@ -6,6 +6,8 @@ const Filter = require('bad-words');
 
 const { generateMessage, generateLocationMessage } = require('./utils/message');
 
+const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users');
+
 const app = express();
 const server = http.createServer(app);
 
@@ -34,14 +36,24 @@ io.on('connection', (socket) => {
         callback('Location Shared');
     });
     socket.on('disconnect', () => {
-        io.emit('newMessage', generateMessage('A user has left!'));
+        const user = removeUser(socket.id);
+
+        if(user) {
+            io.to(user.room).emit('newMessage', generateMessage(`${user.username} has left!`));
+        }
     });
 
-    socket.on('join',({username, room}) => {
-        socket.join(room);
+    socket.on('join',(options, callback) => {
+        const { error, user } = addUser({ id: socket.id, ...options});
 
-        socket.emit('newMessage',generateMessage(`Welcome to ${room}!!!`));
-        socket.broadcast.to(room).emit('newMessage',generateMessage(`${username} has joined`));
+        if(error) {
+            return callback(error);
+        }
+        socket.join(user.room);
+        socket.emit('newMessage',generateMessage(`Welcome to ${user.room}!!!`));
+        socket.broadcast.to(room).emit('newMessage',generateMessage(`${user.username} has joined`));
+
+        callback();
     });
 });
 
