@@ -21,13 +21,14 @@ app.use(express.static(publicDirectoryPath));
 
 io.on('connection', (socket) => {
     socket.on('sendMessage', (message, callback) => {
+        const user = getUser(socket.id);
         const filter = new Filter();
 
         if(filter.isProfane(message)) {
             return callback('Do not use bad word');
         }
 
-        io.emit('newMessage', generateMessage(message));
+        io.to(user.room).emit('newMessage', generateMessage(message));
         callback('Delivered');
     });
 
@@ -37,7 +38,6 @@ io.on('connection', (socket) => {
     });
     socket.on('disconnect', () => {
         const user = removeUser(socket.id);
-
         if(user) {
             io.to(user.room).emit('newMessage', generateMessage(`${user.username} has left!`));
         }
@@ -51,7 +51,7 @@ io.on('connection', (socket) => {
         }
         socket.join(user.room);
         socket.emit('newMessage',generateMessage(`Welcome to ${user.room}!!!`));
-        socket.broadcast.to(room).emit('newMessage',generateMessage(`${user.username} has joined`));
+        socket.broadcast.to(user.room).emit('newMessage',generateMessage(`${user.username} has joined`));
 
         callback();
     });
