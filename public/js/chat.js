@@ -2,6 +2,8 @@ var socket = io();
 
 const $message_template = document.querySelector('#message-templete').innerHTML;
 const $location_template = document.querySelector('#location-templete').innerHTML;
+const users_template = document.querySelector('#sidebar-template').innerHTML;
+
 const txtMessage = document.getElementById('txtMessage');
 const $btnSend = document.querySelector('#btnSend');
 const $btnLocationShare = document.querySelector('#btnShare');
@@ -41,6 +43,7 @@ $btnLocationShare.addEventListener('click', () => {
 
 socket.on('newMessage', (data) => {
     const html = Mustache.render($message_template, {
+        username: data.username,
         message: data.message,
         createdAt: moment(data.createdAt).format('hh:mm a')
     });
@@ -50,11 +53,21 @@ socket.on('newMessage', (data) => {
 
 socket.on('sendLocation', (data) => {
     const htmlMap = Mustache.render($location_template, {
+        username: data.username,
         url: data.url,
         createdAt: moment(data.createdAt).format('hh:mm a')
     });
     messageWindow.insertAdjacentHTML('beforeend',htmlMap);
-})
+});
+
+socket.on('roomData', ({room, users}) => {
+    const user_html = Mustache.render(users_template,{
+        room,
+        users
+    });
+
+    document.getElementById('sidebar').innerHTML = user_html;
+});
 
 socket.emit('join', { username, room }, (error) =>{
     if(error) {

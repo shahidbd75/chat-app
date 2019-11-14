@@ -28,18 +28,20 @@ io.on('connection', (socket) => {
             return callback('Do not use bad word');
         }
 
-        io.to(user.room).emit('newMessage', generateMessage(message));
+        io.to(user.room).emit('newMessage', generateMessage(user.username, message));
         callback('Delivered');
     });
 
     socket.on('shareLocation', (position, callback) => {
-        socket.broadcast.emit('sendLocation', generateLocationMessage(position));
+        const user = getUser(socket.id);
+        socket.to(user.room).broadcast.emit('sendLocation', generateLocationMessage(user.username, position));
         callback('Location Shared');
     });
     socket.on('disconnect', () => {
         const user = removeUser(socket.id);
         if(user) {
-            io.to(user.room).emit('newMessage', generateMessage(`${user.username} has left!`));
+            io.to(user.room).emit('newMessage', generateMessage('Admin',`${user.username} has left!`));
+            io.to(user.room).emit('roomData', {room:user.room, users: getUsersInRoom(user.room)});
         }
     });
 
@@ -50,9 +52,9 @@ io.on('connection', (socket) => {
             return callback(error);
         }
         socket.join(user.room);
-        socket.emit('newMessage',generateMessage(`Welcome to ${user.room}!!!`));
-        socket.broadcast.to(user.room).emit('newMessage',generateMessage(`${user.username} has joined`));
-
+        socket.emit('newMessage', generateMessage('Admin', `Welcome to ${user.room}!!!`));
+        socket.broadcast.to(user.room).emit('newMessage',generateMessage('Admin', `${user.username} has joined`));
+        io.to(user.room).emit('roomData', {room:user.room, users: getUsersInRoom(user.room)});
         callback();
     });
 });
